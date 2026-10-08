@@ -18,6 +18,8 @@ A MuleSoft API Governance ruleset (AMF Validation Profile 1.0) for **MCP server*
 | `prompt-argument-described` | warning | Users and agents guess argument values. | Describe every argument. |
 | `tool-output-schema-declared` | info | Agents can't chain results of unknown shape. | Add an `outputSchema`. |
 
+An empty string counts as missing for every `description` and `mimeType` check. An empty tool description is reported by both `tool-description-required` and `tool-description-substantive`.
+
 Each rule's `documentation` and `examples` in [`ruleset.yaml`](ruleset.yaml) explain it in full. [`fixtures/`](fixtures) holds a compliant manifest (`good/`) and one failing manifest per rule (`bad/<rule>/`).
 
 ## Deploy it to your org

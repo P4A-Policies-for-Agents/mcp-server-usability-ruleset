@@ -45,7 +45,17 @@ findings() {
   if grep -q 'example-validation-error' <<<"$out"; then
     fail "$1: manifest fails the MCP schema (example-validation-error):"$'\n'"$out"
   fi
-  awk '/^Constraint: / { n = split($2, a, "/"); id = a[n] } /^Severity: / { print id ":" $2 }' <<<"$out" | sort
+  if grep -qE 'falling back to legacy mode|Legacy project descriptor' <<<"$out"; then
+    fail "$1: validator ran in legacy mode, not MCP (check exchange.json classifier):"$'\n'"$out"
+  fi
+  local parsed reported raw
+  parsed=$(awk '/^Constraint: / { n = split($2, a, "/"); id = a[n] } /^Severity: / { print id ":" $2; id = "" }' <<<"$out" | sort)
+  # Guard against output the awk does not understand: every result must be parsed.
+  reported=$(sed -n 's/^Number of results: //p' <<<"$out")
+  raw=$(grep -cE '^[[:space:]-]*Constraint:' <<<"$out" || true)
+  [ "$(grep -c . <<<"$parsed" || true)" = "${reported:-0}" ] && [ "$raw" = "${reported:-0}" ] \
+    || fail "$1: parsed findings do not match 'Number of results: ${reported:-0}':"$'\n'"$out"
+  [ -z "$parsed" ] || printf '%s\n' "$parsed"
 }
 
 lint() {
@@ -105,9 +115,15 @@ for dir in fixtures/bad/*/; do
   name=$(basename "$dir")
   id=${name%%.*}
   sev=$(expected_severity "$id") || fail "fixtures/bad/$name: no rule named $id in $RULESET"
+  want="$id:$sev"
+  # An optional `expected` file (written by fixtures.py) lists every finding the fixture must produce.
+  if [ -f "$dir/expected" ]; then
+    want=$(sort "$dir/expected")
+    grep -qx "$id:$sev" <<<"$want" || fail "fixtures/bad/$name/expected must include '$id:$sev'"
+  fi
   got=$(findings "$dir")
-  [ "$got" = "$id:$sev" ] || fail "fixtures/bad/$name: expected exactly '$id:$sev', got:"$'\n'"${got:-<none>}"
-  pass "fixtures/bad/$name -> $id ($sev)"
+  [ "$got" = "$want" ] || fail "fixtures/bad/$name: expected exactly:"$'\n'"$want"$'\n'"got:"$'\n'"${got:-<none>}"
+  pass "fixtures/bad/$name -> ${want//$'\n'/ }"
 done
 
 echo "ALL CHECKS PASSED"

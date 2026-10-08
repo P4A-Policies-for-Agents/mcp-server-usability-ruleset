@@ -4,7 +4,8 @@ Run from the repo root:  python3 -I scripts/fixtures.py
 This deletes and rewrites fixtures/. Never edit fixtures/ by hand.
 
 Bad fixture names are <rule-id> or <rule-id>.<variant>. scripts/check.sh expects
-each one to produce exactly one finding, for <rule-id>.
+each one to produce exactly one finding, for <rule-id>, unless EXPECTED lists the
+findings (written to the fixture's `expected` file).
 """
 import copy
 import json
@@ -92,6 +93,8 @@ def tool(d, i=0):
 
 BAD = {
     "tool-description-required": lambda d: tool(d).pop("description"),
+    # An empty string is no description; it is also shorter than 20 characters.
+    "tool-description-required.empty-string": lambda d: tool(d).__setitem__("description", ""),
     "tool-name-format": lambda d: tool(d).__setitem__("name", "GetWeather"),
     "tool-name-format.too-long": lambda d: tool(d).__setitem__("name", "a" * 65),
     "tool-description-substantive": lambda d: tool(d).__setitem__("description", "Weather."),
@@ -99,15 +102,27 @@ BAD = {
     "tool-description-substantive.19-chars": lambda d: tool(d).__setitem__("description", "Gets city weather!!"),
     "resource-described.no-description": lambda d: d["resources"][0].pop("description"),
     "resource-described.no-mime-type": lambda d: d["resources"][0].pop("mimeType"),
+    "resource-described.empty-description": lambda d: d["resources"][0].__setitem__("description", ""),
+    "resource-described.empty-mime-type": lambda d: d["resources"][0].__setitem__("mimeType", ""),
     "prompt-described": lambda d: d["prompts"][1].pop("description"),
+    "prompt-described.empty-string": lambda d: d["prompts"][1].__setitem__("description", ""),
     "prompt-argument-described": lambda d: d["prompts"][0]["arguments"][0].pop("description"),
+    "prompt-argument-described.empty-string": lambda d: d["prompts"][0]["arguments"][0].__setitem__("description", ""),
     # Review Focus 4: only the second argument is undescribed.
     "prompt-argument-described.second-argument": lambda d: d["prompts"][0]["arguments"][1].pop("description"),
     "tool-output-schema-declared": lambda d: tool(d).pop("outputSchema"),
 }
 
+# Bad fixtures that legitimately produce more than one finding ("<rule-id>:<Severity>").
+EXPECTED = {
+    "tool-description-required.empty-string": [
+        "tool-description-required:Violation",
+        "tool-description-substantive:Warning",
+    ],
+}
 
-def write(name, doc):
+
+def write(name, doc, expected=None):
     path = ROOT / name
     path.mkdir(parents=True)
     (path / "mcp-metadata.json").write_text(json.dumps(doc, indent=2) + "\n")
@@ -122,6 +137,8 @@ def write(name, doc):
         "descriptorVersion": "1.0.0",
     }
     (path / "exchange.json").write_text(json.dumps(exchange, indent=2) + "\n")
+    if expected:
+        (path / "expected").write_text("".join(f"{e}\n" for e in sorted(expected)))
 
 
 def main():
@@ -130,7 +147,7 @@ def main():
     for name, mutate in BAD.items():
         doc = copy.deepcopy(GOOD)
         mutate(doc)
-        write(f"bad/{name}", doc)
+        write(f"bad/{name}", doc, EXPECTED.get(name))
 
 
 if __name__ == "__main__":

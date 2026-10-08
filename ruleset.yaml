@@ -37,6 +37,7 @@ validations:
     propertyConstraints:
       core.description:
         minCount: 1
+        minLength: 1
   tool-name-format:
     message: The tool name is not lower snake_case. Rename it to start with a lowercase letter and use only lowercase letters, digits and underscores (at most 64 characters).
     documentation: |
@@ -96,8 +97,10 @@ validations:
     propertyConstraints:
       core.description:
         minCount: 1
+        minLength: 1
       core.mimeType:
         minCount: 1
+        minLength: 1
   prompt-described:
     message: The prompt has no description. Add one that says what the prompt produces and when to use it.
     documentation: |
@@ -115,6 +118,7 @@ validations:
     propertyConstraints:
       core.description:
         minCount: 1
+        minLength: 1
   prompt-argument-described:
     message: A prompt argument has no description. Describe every argument so users and agents know what value to supply.
     documentation: |
@@ -142,6 +146,7 @@ validations:
           propertyConstraints:
             core.description:
               minCount: 1
+              minLength: 1
   tool-output-schema-declared:
     message: The tool declares no outputSchema. Add one so agents and gateways know the shape of its structured result.
     documentation: |
