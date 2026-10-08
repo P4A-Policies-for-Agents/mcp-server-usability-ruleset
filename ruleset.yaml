@@ -1,0 +1,31 @@
+#%Validation Profile 1.0
+profile: MCP Server Usability
+description: >-
+  Usability checks for MCP server manifests: tools have consistent names, real descriptions
+  and declared outputs, and resources, prompts and prompt arguments are described, so agents
+  can choose and call them correctly. Pairs with MCP Server Safety and with MuleSoft's
+  Agent Network Best Practices (transport and protocol version).
+prefixes:
+  mcp: http://anypoint.com/vocabs/mcp#
+violation:
+  - tool-description-required
+validations:
+  tool-description-required:
+    message: The tool has no description. Add one that tells an agent what the tool does and when to call it.
+    documentation: |
+      A model chooses tools almost entirely from their descriptions. A tool without one is
+      invisible to tool selection at best, and called for the wrong job at worst. The
+      description is the tool's contract with the agent: what it does, when to use it, and
+      what it returns.
+    examples:
+      valid: |
+        tools:
+          - name: get_weather
+            description: Gets the current weather for a city.
+      invalid: |
+        tools:
+          - name: get_weather
+    targetClass: mcp.Tool
+    propertyConstraints:
+      core.description:
+        minCount: 1

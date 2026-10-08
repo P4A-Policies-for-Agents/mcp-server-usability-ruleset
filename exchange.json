@@ -1,0 +1,7 @@
+{
+  "main": "ruleset.yaml",
+  "name": "MCP Server Usability",
+  "description": "Usability checks for MCP server manifests: tools, resources and prompts are named and described well enough for agents to choose and call them correctly.",
+  "assetId": "mcp-server-usability",
+  "version": "1.0.0"
+}

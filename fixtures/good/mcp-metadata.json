@@ -1,0 +1,117 @@
+{
+  "protocolVersion": "2025-06-18",
+  "transport": {
+    "kind": "streamableHttp",
+    "path": "/mcp"
+  },
+  "capabilities": {
+    "tools": {},
+    "resources": {},
+    "prompts": {}
+  },
+  "securitySchemes": {
+    "bearer": {
+      "type": "http",
+      "scheme": "bearer"
+    }
+  },
+  "tools": [
+    {
+      "name": "get_weather",
+      "description": "Gets the current weather for a city.",
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": true
+      },
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "City name",
+            "maxLength": 100
+          }
+        },
+        "required": [
+          "location"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "temperatureC": {
+            "type": "number",
+            "description": "Temperature in Celsius"
+          }
+        }
+      }
+    },
+    {
+      "name": "set_alert_threshold",
+      "description": "Sets the temperature that triggers a weather alert for a city.",
+      "annotations": {
+        "destructiveHint": false,
+        "openWorldHint": false
+      },
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "City name",
+            "maxLength": 100
+          },
+          "thresholdC": {
+            "type": "number",
+            "description": "Alert threshold in Celsius"
+          }
+        },
+        "required": [
+          "location",
+          "thresholdC"
+        ]
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "description": "Whether the threshold was saved"
+          }
+        }
+      }
+    }
+  ],
+  "resources": [
+    {
+      "uri": "weather://cities",
+      "name": "cities",
+      "description": "List of supported cities.",
+      "mimeType": "application/json"
+    }
+  ],
+  "prompts": [
+    {
+      "name": "weather_report",
+      "description": "Writes a short weather report for a city.",
+      "arguments": [
+        {
+          "name": "location",
+          "description": "City name",
+          "required": true
+        },
+        {
+          "name": "tone",
+          "description": "Writing tone, e.g. formal or casual",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "daily_summary",
+      "description": "Summarizes today's weather for all supported cities."
+    }
+  ]
+}
