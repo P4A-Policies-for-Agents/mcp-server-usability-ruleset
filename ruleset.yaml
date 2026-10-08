@@ -12,6 +12,8 @@ violation:
 warning:
   - tool-name-format
   - tool-description-substantive
+  - resource-described
+  - prompt-described
 validations:
   tool-description-required:
     message: The tool has no description. Add one that tells an agent what the tool does and when to call it.
@@ -70,3 +72,43 @@ validations:
     propertyConstraints:
       core.description:
         minLength: 20
+  resource-described:
+    message: The resource is missing a description or a mimeType. Add both so agents know what the resource contains and how to read it.
+    documentation: |
+      Agents list resources and decide which to read from their descriptions, and they need
+      the mimeType to parse what comes back. A resource without either is effectively
+      undiscoverable, or is read and then misinterpreted.
+    examples:
+      valid: |
+        resources:
+          - uri: weather://cities
+            name: cities
+            description: List of supported cities.
+            mimeType: application/json
+      invalid: |
+        resources:
+          - uri: weather://cities
+            name: cities
+    targetClass: mcp.Resource
+    propertyConstraints:
+      core.description:
+        minCount: 1
+      core.mimeType:
+        minCount: 1
+  prompt-described:
+    message: The prompt has no description. Add one that says what the prompt produces and when to use it.
+    documentation: |
+      Prompts are surfaced to users and agents as reusable templates. Without a description,
+      a client can only show the prompt's name, and nobody can tell what it does without running it.
+    examples:
+      valid: |
+        prompts:
+          - name: weather_report
+            description: Writes a short weather report for a city.
+      invalid: |
+        prompts:
+          - name: weather_report
+    targetClass: mcp.Prompt
+    propertyConstraints:
+      core.description:
+        minCount: 1

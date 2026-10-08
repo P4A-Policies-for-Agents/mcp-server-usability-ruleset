@@ -1,0 +1,9 @@
+{
+  "main": "mcp-metadata.json",
+  "name": "bad-resource-described-no-description",
+  "groupId": "p4a-fixtures",
+  "assetId": "bad-resource-described-no-description",
+  "version": "1.0.0",
+  "classifier": "mcp-metadata",
+  "descriptorVersion": "1.0.0"
+}

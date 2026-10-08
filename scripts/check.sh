@@ -40,7 +40,7 @@ expected_severity() {
 # Sorted "<rule-id>:<Severity>" lines for one fixture project.
 findings() {
   local out
-  out=$("$CLI" governance:api:validate "$1" --rulesets "$RULESET" 2>&1) || true
+  out=$("$CLI" governance:api:validate "$1" --rulesets "$RULESET" --no-collectMetrics 2>&1) || true
   grep -q '^Conforms:' <<<"$out" || fail "$1: validator did not run:"$'\n'"$out"
   if grep -q 'example-validation-error' <<<"$out"; then
     fail "$1: manifest fails the MCP schema (example-validation-error):"$'\n'"$out"
@@ -82,7 +82,7 @@ fi
   || fail "validate-authoring: $summary (expected 0 errors, $EXPECTED_AUTHORING_WARNINGS warnings)"$'\n'"$out"
 pass "validate-authoring ($summary)"
 
-out=$("$CLI" governance:ruleset:validate "$RULESET" 2>&1) || true
+out=$("$CLI" governance:ruleset:validate "$RULESET" --no-collectMetrics 2>&1) || true
 grep -q 'Ruleset conforms with Dialect' <<<"$out" || fail "dialect validation:"$'\n'"$out"
 pass "dialect validate"
 

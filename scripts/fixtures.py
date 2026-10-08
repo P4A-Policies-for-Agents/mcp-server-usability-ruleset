@@ -97,6 +97,9 @@ BAD = {
     "tool-description-substantive": lambda d: tool(d).__setitem__("description", "Weather."),
     # 19 characters: one below the minimum.
     "tool-description-substantive.19-chars": lambda d: tool(d).__setitem__("description", "Gets city weather!!"),
+    "resource-described.no-description": lambda d: d["resources"][0].pop("description"),
+    "resource-described.no-mime-type": lambda d: d["resources"][0].pop("mimeType"),
+    "prompt-described": lambda d: d["prompts"][1].pop("description"),
 }
 
 
