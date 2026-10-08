@@ -9,6 +9,9 @@ prefixes:
   mcp: http://anypoint.com/vocabs/mcp#
 violation:
   - tool-description-required
+warning:
+  - tool-name-format
+  - tool-description-substantive
 validations:
   tool-description-required:
     message: The tool has no description. Add one that tells an agent what the tool does and when to call it.
@@ -29,3 +32,41 @@ validations:
     propertyConstraints:
       core.description:
         minCount: 1
+  tool-name-format:
+    message: The tool name is not lower snake_case. Rename it to start with a lowercase letter and use only lowercase letters, digits and underscores (at most 64 characters).
+    documentation: |
+      Tool names are identifiers that models emit verbatim in tool calls, and many clients and
+      LLM APIs restrict them (64 characters, a limited character set). Lower snake_case avoids
+      rejected calls, keeps names stable when gateways merge tools from several servers, and
+      matches the convention most MCP servers use.
+    examples:
+      valid: |
+        tools:
+          - name: get_weather
+      invalid: |
+        tools:
+          - name: GetWeather
+    targetClass: mcp.Tool
+    propertyConstraints:
+      core.name:
+        pattern: "^[a-z][a-z0-9_]{0,63}$"
+  tool-description-substantive:
+    message: The tool description is shorter than 20 characters. Expand it to say what the tool does and when an agent should call it.
+    documentation: |
+      One-word descriptions ("Weather.", "Search") give a model nothing to choose between
+      similar tools. Twenty characters is a deliberately low floor: enough for a verb, an
+      object and a qualifier. Missing descriptions are reported by tool-description-required,
+      not by this rule.
+    examples:
+      valid: |
+        tools:
+          - name: get_weather
+            description: Gets the current weather for a city.
+      invalid: |
+        tools:
+          - name: get_weather
+            description: Weather.
+    targetClass: mcp.Tool
+    propertyConstraints:
+      core.description:
+        minLength: 20

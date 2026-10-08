@@ -92,6 +92,11 @@ def tool(d, i=0):
 
 BAD = {
     "tool-description-required": lambda d: tool(d).pop("description"),
+    "tool-name-format": lambda d: tool(d).__setitem__("name", "GetWeather"),
+    "tool-name-format.too-long": lambda d: tool(d).__setitem__("name", "a" * 65),
+    "tool-description-substantive": lambda d: tool(d).__setitem__("description", "Weather."),
+    # 19 characters: one below the minimum.
+    "tool-description-substantive.19-chars": lambda d: tool(d).__setitem__("description", "Gets city weather!!"),
 }
 
 
