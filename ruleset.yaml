@@ -14,6 +14,9 @@ warning:
   - tool-description-substantive
   - resource-described
   - prompt-described
+  - prompt-argument-described
+info:
+  - tool-output-schema-declared
 validations:
   tool-description-required:
     message: The tool has no description. Add one that tells an agent what the tool does and when to call it.
@@ -111,4 +114,53 @@ validations:
     targetClass: mcp.Prompt
     propertyConstraints:
       core.description:
+        minCount: 1
+  prompt-argument-described:
+    message: A prompt argument has no description. Describe every argument so users and agents know what value to supply.
+    documentation: |
+      Clients render prompt arguments as a form, and agents fill them in from context.
+      An argument with only a name ("text", "id") leaves both guessing at format and meaning.
+      Prompts without arguments are not affected by this rule.
+    examples:
+      valid: |
+        prompts:
+          - name: weather_report
+            description: Writes a short weather report for a city.
+            arguments:
+              - name: location
+                description: City name
+      invalid: |
+        prompts:
+          - name: weather_report
+            description: Writes a short weather report for a city.
+            arguments:
+              - name: location
+    targetClass: mcp.Prompt
+    propertyConstraints:
+      core.arguments:
+        nested:
+          propertyConstraints:
+            core.description:
+              minCount: 1
+  tool-output-schema-declared:
+    message: The tool declares no outputSchema. Add one so agents and gateways know the shape of its structured result.
+    documentation: |
+      Since MCP 2025-06-18, tools can declare an outputSchema for their structuredContent.
+      With it, agents can chain tool results without guessing their shape, and gateways can
+      validate or redact responses. It is optional in the protocol, so this is informational:
+      prefer it for any tool that returns data rather than prose.
+    examples:
+      valid: |
+        tools:
+          - name: get_weather
+            outputSchema:
+              type: object
+              properties:
+                temperatureC: { type: number }
+      invalid: |
+        tools:
+          - name: get_weather
+    targetClass: mcp.Tool
+    propertyConstraints:
+      core.outputSchema:
         minCount: 1

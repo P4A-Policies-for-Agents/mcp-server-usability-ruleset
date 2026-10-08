@@ -100,6 +100,10 @@ BAD = {
     "resource-described.no-description": lambda d: d["resources"][0].pop("description"),
     "resource-described.no-mime-type": lambda d: d["resources"][0].pop("mimeType"),
     "prompt-described": lambda d: d["prompts"][1].pop("description"),
+    "prompt-argument-described": lambda d: d["prompts"][0]["arguments"][0].pop("description"),
+    # Review Focus 4: only the second argument is undescribed.
+    "prompt-argument-described.second-argument": lambda d: d["prompts"][0]["arguments"][1].pop("description"),
+    "tool-output-schema-declared": lambda d: tool(d).pop("outputSchema"),
 }
 
 
