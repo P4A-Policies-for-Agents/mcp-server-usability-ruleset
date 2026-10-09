@@ -1,0 +1,7 @@
+{
+  "platform": "ruleset-examples",
+  "transport": {
+    "kind": "streamableHttp",
+    "path": "/mcp"
+  }
+}

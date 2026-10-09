@@ -16,6 +16,7 @@ A MuleSoft API Governance ruleset (AMF Validation Profile 1.0) for **MCP server*
 | `resource-described` | warning | Agents can't find or parse undescribed resources. | Add `description` and `mimeType`. |
 | `prompt-described` | warning | Users can't tell what a prompt does. | Add a `description`. |
 | `prompt-argument-described` | warning | Users and agents guess argument values. | Describe every argument. |
+| `server-declares-capabilities` | warning | An empty manifest (what Exchange stores when there is no `mcp-metadata.json`) tells agents nothing. | List at least one tool, resource or prompt. |
 | `tool-output-schema-declared` | info | Agents can't chain results of unknown shape. | Add an `outputSchema`. |
 
 An empty string counts as missing for every `description` and `mimeType` check. An empty tool description is reported by both `tool-description-required` and `tool-description-substantive`.
@@ -34,6 +35,10 @@ This ruleset is published through the P4A catalog (https://www.p4a.ai). Open its
 
 - **Tool parameters are not checked.** Rules like "every parameter has a description" or "every parameter has a type" need access to individual input-schema properties. In governance plugin 1.0.21 the MCP model exposes input `properties` only as an opaque value, and custom Rego rules are not supported for MCP assets.
 - **Description quality is a length floor.** 20 characters can still be unhelpful; review descriptions as part of your API review.
+
+## Known authoring error
+
+`governance:ruleset:validate-authoring` reports one error: `server-declares-capabilities` uses `targetClass: core.encodes`, which the linter calls invalid. The linter's MCP metadata is out of date. It lists an `mcp.Server` class, but plugin 1.1.x never types the manifest root as `mcp:Server`, so a rule on `mcp.Server` would never run. The root is typed `core:encodes`, and the rule fires correctly on it (see `fixtures/bad/server-declares-capabilities.*`).
 
 ## Test on Exchange assets
 

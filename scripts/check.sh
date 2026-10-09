@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # --- per-repo config ---
-EXPECTED_AUTHORING_ERRORS=0   # no known authoring errors
+EXPECTED_AUTHORING_ERRORS=1   # README "Known authoring error": core.encodes targetClass
 EXPECTED_AUTHORING_WARNINGS=0   # no known authoring warnings
 SIBLING_GOOD=../mcp-server-safety-ruleset/fixtures/good
 # -----------------------
@@ -66,8 +66,8 @@ lint() {
   grep -qE '^profile: .+' "$RULESET" || fail "missing non-empty 'profile:' name"
   grep -qx '  mcp: http://anypoint.com/vocabs/mcp#' "$RULESET" \
     || fail "missing 'prefixes: mcp: http://anypoint.com/vocabs/mcp#' (validator panics without it)"
-  # Plugin 1.1.x models MCP element fields as mcp.*; only the server's securitySchemes stays core.*.
-  if grep -nE '^ +core\.[A-Za-z]+:' "$RULESET" | grep -v 'core\.securitySchemes:'; then
+  # Plugin 1.1.x models MCP element fields as mcp.*; only manifest-root fields stay core.*.
+  if grep -nE '^ +core\.[A-Za-z]+:' "$RULESET" | grep -vE 'core\.(securitySchemes|tools|resources|prompts):'; then
     fail "MCP element paths must use mcp.*, not core.* (lines above)"
   fi
   listed=$({ severity_ids violation; severity_ids warning; severity_ids info; } | sort)

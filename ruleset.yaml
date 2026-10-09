@@ -15,6 +15,7 @@ warning:
   - resource-described
   - prompt-described
   - prompt-argument-described
+  - server-declares-capabilities
 info:
   - tool-output-schema-declared
 validations:
@@ -169,3 +170,32 @@ validations:
     propertyConstraints:
       mcp.outputSchema:
         minCount: 1
+  server-declares-capabilities:
+    message: The MCP manifest declares no tools, resources or prompts. Attach an mcp-metadata.json that lists what the server exposes.
+    documentation: |
+      Agents, gateways and this ruleset learn what a server offers only from its manifest.
+      Exchange accepts an MCP asset without an mcp-metadata.json and stores a stub with just
+      the transport, so the asset looks valid while describing nothing, and every other rule
+      in this ruleset has nothing to check. A server that exposes only resources or only
+      prompts passes.
+    examples:
+      valid: |
+        tools:
+          - name: get_weather
+            description: Gets the current weather for a city.
+      invalid: |
+        transport:
+          kind: streamableHttp
+          path: /mcp
+    # Plugin 1.1.x types the manifest root as core:encodes, not mcp:Server (README "Known authoring error").
+    targetClass: core.encodes
+    or:
+      - propertyConstraints:
+          core.tools:
+            minCount: 1
+      - propertyConstraints:
+          core.resources:
+            minCount: 1
+      - propertyConstraints:
+          core.prompts:
+            minCount: 1

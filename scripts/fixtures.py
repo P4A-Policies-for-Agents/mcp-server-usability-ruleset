@@ -111,6 +111,12 @@ BAD = {
     # Review Focus 4: only the second argument is undescribed.
     "prompt-argument-described.second-argument": lambda d: d["prompts"][0]["arguments"][1].pop("description"),
     "tool-output-schema-declared": lambda d: tool(d).pop("outputSchema"),
+    "server-declares-capabilities": lambda d: [d.pop(k) for k in ("tools", "resources", "prompts")],
+    "server-declares-capabilities.empty-lists": lambda d: d.update(tools=[], resources=[], prompts=[]),
+    # What Exchange stores when an MCP asset is published without an mcp-metadata.json.
+    "server-declares-capabilities.exchange-stub": lambda d: (
+        d.clear(), d.update(platform="ruleset-examples", transport={"kind": "streamableHttp", "path": "/mcp"})
+    ),
 }
 
 # Bad fixtures that legitimately produce more than one finding ("<rule-id>:<Severity>").
