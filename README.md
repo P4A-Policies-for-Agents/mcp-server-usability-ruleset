@@ -33,6 +33,7 @@ This ruleset is published through the P4A catalog (https://www.p4a.ai). Open its
 
 ## Limitations
 
+- **Manifest-level rules key on `transport`.** `server-declares-capabilities` checks only documents with a `transport` field, which the MCP schema requires and A2A Agent Cards don't have. That keeps it off Agent Cards attached to the same profile (`fixtures/scope/`).
 - **Tool parameters are not checked.** Rules like "every parameter has a description" or "every parameter has a type" need access to individual input-schema properties. In governance plugin 1.0.21 the MCP model exposes input `properties` only as an opaque value, and custom Rego rules are not supported for MCP assets.
 - **Description quality is a length floor.** 20 characters can still be unhelpful; review descriptions as part of your API review.
 

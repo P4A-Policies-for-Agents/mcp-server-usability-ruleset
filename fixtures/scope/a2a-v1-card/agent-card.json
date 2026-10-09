@@ -1,0 +1,32 @@
+{
+  "name": "Weather Agent",
+  "description": "Answers questions about current weather and forecasts for a city.",
+  "supportedInterfaces": [
+    {
+      "url": "https://weather.example.com/a2a/v1",
+      "protocolBinding": "JSONRPC",
+      "protocolVersion": "1.0"
+    }
+  ],
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "defaultInputModes": [
+    "text/plain"
+  ],
+  "defaultOutputModes": [
+    "text/plain"
+  ],
+  "skills": [
+    {
+      "id": "current-weather",
+      "name": "Current weather",
+      "description": "Reports the current weather for a city.",
+      "tags": [
+        "weather"
+      ]
+    }
+  ]
+}

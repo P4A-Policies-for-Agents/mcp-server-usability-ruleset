@@ -67,7 +67,7 @@ lint() {
   grep -qx '  mcp: http://anypoint.com/vocabs/mcp#' "$RULESET" \
     || fail "missing 'prefixes: mcp: http://anypoint.com/vocabs/mcp#' (validator panics without it)"
   # Plugin 1.1.x models MCP element fields as mcp.*; only manifest-root fields stay core.*.
-  if grep -nE '^ +core\.[A-Za-z]+:' "$RULESET" | grep -vE 'core\.(securitySchemes|tools|resources|prompts):'; then
+  if grep -nE '^ +core\.[A-Za-z]+:' "$RULESET" | grep -vE 'core\.(securitySchemes|transport|tools|resources|prompts):'; then
     fail "MCP element paths must use mcp.*, not core.* (lines above)"
   fi
   listed=$({ severity_ids violation; severity_ids warning; severity_ids info; } | sort)
@@ -114,6 +114,12 @@ if [ -d "$SIBLING_GOOD" ]; then
   [ -z "$got" ] || fail "$SIBLING_GOOD should have 0 findings, got:"$'\n'"$got"
   pass "$SIBLING_GOOD: 0 findings"
 fi
+
+for dir in fixtures/scope/*/; do
+  got=$(findings "$dir")
+  [ -z "$got" ] || fail "$dir should have 0 findings (other asset type), got:"$'\n'"$got"
+  pass "$dir: 0 findings"
+done
 
 for id in $(defined_ids); do
   [ -d "fixtures/bad/$id" ] || compgen -G "fixtures/bad/$id.*" >/dev/null \

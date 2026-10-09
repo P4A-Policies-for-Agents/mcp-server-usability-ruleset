@@ -1,0 +1,9 @@
+{
+  "main": "agent-card.json",
+  "name": "scope-a2a-v1-card",
+  "groupId": "p4a-fixtures",
+  "assetId": "scope-a2a-v1-card",
+  "version": "1.0.0",
+  "classifier": "a2a-v1-card",
+  "descriptorVersion": "1.0.0"
+}

@@ -189,13 +189,19 @@ validations:
           path: /mcp
     # Plugin 1.1.x types the manifest root as core:encodes, not mcp:Server (README "Known authoring error").
     targetClass: core.encodes
-    or:
-      - propertyConstraints:
-          core.tools:
-            minCount: 1
-      - propertyConstraints:
-          core.resources:
-            minCount: 1
-      - propertyConstraints:
-          core.prompts:
-            minCount: 1
+    # A2A cards share the core.encodes class; transport is required in MCP manifests and absent from cards.
+    if:
+      propertyConstraints:
+        core.transport:
+          minCount: 1
+    then:
+      or:
+        - propertyConstraints:
+            core.tools:
+              minCount: 1
+        - propertyConstraints:
+            core.resources:
+              minCount: 1
+        - propertyConstraints:
+            core.prompts:
+              minCount: 1
