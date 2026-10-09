@@ -22,13 +22,17 @@ An empty string counts as missing for every `description` and `mimeType` check. 
 
 Each rule's `documentation` and `examples` in [`ruleset.yaml`](ruleset.yaml) explain it in full. [`fixtures/`](fixtures) holds a compliant manifest (`good/`) and one failing manifest per rule (`bad/<rule>/`).
 
+## Requirements
+
+Governance plugin 1.1.4 or later (`anypoint-cli-v4 plugins --core`). Plugin 1.1.x names MCP element fields `mcp.*` (for example `mcp.description`); 1.0.x named them `core.*`, so this version does not work on 1.0.x. `scripts/check.sh` checks the plugin version.
+
 ## Deploy it to your org
 
 This ruleset is published through the P4A catalog (https://www.p4a.ai). Open its catalog entry and use **Publish to Exchange** (or the P4A MCP server's `deploy_ruleset`) to publish it into your own Anypoint organization, then add it to a governance profile that targets your MCP server assets.
 
 ## Limitations
 
-- **Tool parameters are not checked.** Rules like "every parameter has a description" or "every parameter has a type" need access to individual input-schema properties. In governance-ruleset-tools 1.0.21 the MCP model exposes input `properties` only as an opaque value, and custom Rego rules are not supported for MCP assets.
+- **Tool parameters are not checked.** Rules like "every parameter has a description" or "every parameter has a type" need access to individual input-schema properties. In governance plugin 1.0.21 the MCP model exposes input `properties` only as an opaque value, and custom Rego rules are not supported for MCP assets.
 - **Description quality is a length floor.** 20 characters can still be unhelpful; review descriptions as part of your API review.
 
 ## Test on Exchange assets
@@ -57,4 +61,4 @@ scripts/check.sh                 # lint + authoring + dialect + every fixture
 
 Bump `version` in `exchange.json` for every rule change; Exchange versions are immutable. Design: [design spec](https://github.com/P4A-Policies-for-Agents/mcp-server-safety-ruleset/blob/main/docs/superpowers/specs/2026-10-08-mcp-server-rulesets-design.md) (in the Safety repo).
 
-> Source Ref: [MuleSoft API Governance: custom rulesets](https://docs.mulesoft.com/api-governance/create-custom-rulesets), [MCP tools](https://modelcontextprotocol.io/specification/2025-06-18/server/tools), [MCP resources](https://modelcontextprotocol.io/specification/2025-06-18/server/resources), [MCP prompts](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts). Snapshot 2026-10-08; validated with anypoint-cli-v4 1.6.25 / governance plugin 1.0.21.
+> Source Ref: [MuleSoft API Governance: custom rulesets](https://docs.mulesoft.com/api-governance/create-custom-rulesets), [MCP tools](https://modelcontextprotocol.io/specification/2025-06-18/server/tools), [MCP resources](https://modelcontextprotocol.io/specification/2025-06-18/server/resources), [MCP prompts](https://modelcontextprotocol.io/specification/2025-06-18/server/prompts). Snapshot 2026-10-09; validated with anypoint-cli-v4 1.6.25 / governance plugin 1.1.4.

@@ -5,6 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 # --- per-repo config ---
+EXPECTED_AUTHORING_ERRORS=0   # no known authoring errors
 EXPECTED_AUTHORING_WARNINGS=0   # no known authoring warnings
 SIBLING_GOOD=../mcp-server-safety-ruleset/fixtures/good
 # -----------------------
@@ -65,8 +66,9 @@ lint() {
   grep -qE '^profile: .+' "$RULESET" || fail "missing non-empty 'profile:' name"
   grep -qx '  mcp: http://anypoint.com/vocabs/mcp#' "$RULESET" \
     || fail "missing 'prefixes: mcp: http://anypoint.com/vocabs/mcp#' (validator panics without it)"
-  if grep -nE '^ +mcp\.[A-Za-z]+:' "$RULESET"; then
-    fail "property paths must use core.*, not mcp.* (lines above)"
+  # Plugin 1.1.x models MCP element fields as mcp.*; only the server's securitySchemes stays core.*.
+  if grep -nE '^ +core\.[A-Za-z]+:' "$RULESET" | grep -v 'core\.securitySchemes:'; then
+    fail "MCP element paths must use mcp.*, not core.* (lines above)"
   fi
   listed=$({ severity_ids violation; severity_ids warning; severity_ids info; } | sort)
   [ -n "$listed" ] || fail "no rules listed under violation/warning/info"
@@ -78,6 +80,9 @@ lint() {
 }
 
 echo "CLI: $("$CLI" --version) / $("$CLI" plugins --core | grep governance-plugin)"
+plugin_version=$("$CLI" plugins --core | grep -m1 governance-plugin | awk '{print $2}')
+[ "$(printf '%s\n' 1.1.4 "$plugin_version" | sort -V | head -1)" = 1.1.4 ] \
+  || fail "governance plugin $plugin_version is too old: the mcp.* paths need 1.1.4 or later"
 
 lint
 
@@ -88,8 +93,12 @@ if grep -qx 'Ruleset is valid' <<<"$out"; then
 else
   summary=$(grep -E '^[0-9]+ error\(s\), [0-9]+ warning\(s\)' <<<"$out") || fail "validate-authoring did not run:"$'\n'"$out"
 fi
-[ "$summary" = "0 error(s), $EXPECTED_AUTHORING_WARNINGS warning(s)" ] \
-  || fail "validate-authoring: $summary (expected 0 errors, $EXPECTED_AUTHORING_WARNINGS warnings)"$'\n'"$out"
+[ "$summary" = "$EXPECTED_AUTHORING_ERRORS error(s), $EXPECTED_AUTHORING_WARNINGS warning(s)" ] \
+  || fail "validate-authoring: $summary (expected $EXPECTED_AUTHORING_ERRORS errors, $EXPECTED_AUTHORING_WARNINGS warnings)"$'\n'"$out"
+# The authoring linter's MCP metadata is stale: the only error it may report is the core.encodes targetClass.
+if grep '^\[ERROR\]' <<<"$out" | grep -v 'Invalid targetClass: "core.encodes"'; then
+  fail "validate-authoring reported an unexpected error (above)"
+fi
 pass "validate-authoring ($summary)"
 
 out=$("$CLI" governance:ruleset:validate "$RULESET" --no-collectMetrics 2>&1) || true

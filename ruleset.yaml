@@ -35,7 +35,7 @@ validations:
           - name: get_weather
     targetClass: mcp.Tool
     propertyConstraints:
-      core.description:
+      mcp.description:
         minCount: 1
         minLength: 1
   tool-name-format:
@@ -54,7 +54,7 @@ validations:
           - name: GetWeather
     targetClass: mcp.Tool
     propertyConstraints:
-      core.name:
+      mcp.name:
         pattern: "^[a-z][a-z0-9_]{0,63}$"
   tool-description-substantive:
     message: The tool description is shorter than 20 characters. Expand it to say what the tool does and when an agent should call it.
@@ -74,7 +74,7 @@ validations:
             description: Weather.
     targetClass: mcp.Tool
     propertyConstraints:
-      core.description:
+      mcp.description:
         minLength: 20
   resource-described:
     message: The resource is missing a description or a mimeType. Add both so agents know what the resource contains and how to read it.
@@ -95,10 +95,10 @@ validations:
             name: cities
     targetClass: mcp.Resource
     propertyConstraints:
-      core.description:
+      mcp.description:
         minCount: 1
         minLength: 1
-      core.mimeType:
+      mcp.mimeType:
         minCount: 1
         minLength: 1
   prompt-described:
@@ -116,7 +116,7 @@ validations:
           - name: weather_report
     targetClass: mcp.Prompt
     propertyConstraints:
-      core.description:
+      mcp.description:
         minCount: 1
         minLength: 1
   prompt-argument-described:
@@ -141,10 +141,10 @@ validations:
               - name: location
     targetClass: mcp.Prompt
     propertyConstraints:
-      core.arguments:
+      mcp.arguments:
         nested:
           propertyConstraints:
-            core.description:
+            mcp.description:
               minCount: 1
               minLength: 1
   tool-output-schema-declared:
@@ -167,5 +167,5 @@ validations:
           - name: get_weather
     targetClass: mcp.Tool
     propertyConstraints:
-      core.outputSchema:
+      mcp.outputSchema:
         minCount: 1
